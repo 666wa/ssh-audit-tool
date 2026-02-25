@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>违规使用模板核查流程图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+        
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .step {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 40px;
+            border-radius: 15px;
+            min-width: 600px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: rgba(255,255,255,0.3);
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+        
+        .step-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .step-content {
+            margin-left: 55px;
+            line-height: 1.8;
+        }
+        
+        .code-block {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+        }
+        
+        .arrow {
+            font-size: 40px;
+            color: #667eea;
+            text-align: center;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .decision {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            position: relative;
+            min-width: 600px;
+        }
+        
+        .decision::before {
+            content: '?';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 60px;
+            opacity: 0.3;
+            font-weight: bold;
+        }
+        
+        .branch-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        .branch {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 280px;
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+        }
+        
+        .branch-yes {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        .branch-no {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        .result {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+            min-width: 600px;
+        }
+        
+        .example-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        
+        .example-title {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .example-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            color: #2c3e50;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #856404;
+            font-weight: bold;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .key-point {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .key-point-title {
+            color: #1976d2;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 违规使用模板核查流程图</h1>
+        <p class="subtitle">SSH审计工具 - 账号违规使用模板核查逻辑可视化</p>
+        
+        <!-- 主流程 -->
+        <div class="flowchart">
+            <!-- 步骤1 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">1</span>
+                    从CSV文件提取字段
+                </div>
+                <div class="step-content">
+                    <div class="code-block">
+                        账号 (sub_acct_name):  webapp<br>
+                        源IP (client_ip):      10.250.104.83<br>
+                        目标IP (server_ip):    10.102.44.103<br>
+                        操作内容 (op_fort_content): ll
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- 步骤2 - 判断 -->
+            <div class="step decision">
+                <div class="step-title">
+                    <span class="step-number">2</span>
+                    判断操作内容是否为SSH命令
+                </div>
+                <div class="step-content">
+                    检查 op_fort_content 是否以 "ssh" 开头
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- 分支 -->
+            <div class="branch-container">
+                <div class="branch branch-no">
+                    <div style="font-weight: bold; margin-bottom: 10px; font-size: 18px;">❌ 否 (大部分情况)</div>
+                    <div style="margin-bottom: 10px;">操作内容是普通命令：</div>
+                    <div class="code-block" style="background: rgba(0,0,0,0.1);">
+                        ll<br>
+                        clear<br>
+                        tail -f nohup.out<br>
+                        sh deploy.sh
+                    </div>
+                    <div style="margin-top: 15px; font-weight: bold; color: #d32f2f;">
+                        → 需要构造SSH命令
+                    </div>
+                    <div class="code-block" style="background: rgba(0,0,0,0.1); margin-top: 10px;">
+                        ssh webapp@10.102.44.103
+                    </div>
+                </div>
+                
+                <div class="branch branch-yes">
+                    <div style="font-weight: bold; margin-bottom: 10px; font-size: 18px;">✅ 是 (少数情况)</div>
+                    <div style="margin-bottom: 10px;">操作内容已经是SSH命令：</div>
+                    <div class="code-block" style="background: rgba(0,0,0,0.1);">
+                        ssh root@10.1.1.1<br>
+                        ssh admin@10.1.1.5
+                    </div>
+                    <div style="margin-top: 15px; font-weight: bold; color: #388e3c;">
+                        → 直接使用该命令
+                    </div>
+                    <div class="code-block" style="background: rgba(0,0,0,0.1); margin-top: 10px;">
+                        ssh root@10.1.1.1
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- 步骤3 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">3</span>
+                    提取核查三元组
+                </div>
+                <div class="step-content">
+                    <div class="code-block">
+                        访问账号: webapp<br>
+                        源端IP:   10.250.104.83  (来自 client_ip)<br>
+                        对端IP:   10.102.44.103  (来自 server_ip)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- 步骤4 -->
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">4</span>
+                    在报备表中查找匹配记录
+                </div>
+                <div class="step-content">
+                    <div class="code-block">
+                        匹配条件1: 报备表.访问账号 = "webapp"<br>
+                        匹配条件2: 报备表.本端主机IP 包含 "10.250.104.83"<br>
+                        匹配条件3: 报备表.对端主机IP 包含 "10.102.44.103"<br>
+                        匹配条件4: 文件日期在生效时间和失效时间之间
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- 步骤5 -->
+            <div class="step result">
+                <div class="step-title">
+                    <span class="step-number">5</span>
+                    返回核查结果
+                </div>
+                <div class="step-content">
+                    <div style="margin-bottom: 10px;">✅ <strong>已报备</strong> - 找到匹配的有效报备记录</div>
+                    <div style="margin-bottom: 10px;">❌ <strong>未报备</strong> - 未找到匹配的报备记录</div>
+                    <div style="margin-bottom: 10px;">⏰ <strong>已报备但已过期</strong> - 找到匹配但报备已过期</div>
+                    <div>⚠️ <strong>异常</strong> - 无法构造有效的SSH命令</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 业务场景说明 -->
+        <div class="key-point">
+            <div class="key-point-title">💡 业务场景理解</div>
+            <div style="color: #424242; line-height: 1.8;">
+                违规使用模板记录的是<strong>通过堡垒机或跳板机的操作行为</strong>：
+                <div style="margin: 20px 0; padding: 20px; background: white; border-radius: 8px; text-align: center; font-family: monospace;">
+                    用户 → 堡垒机(client_ip) → 目标服务器(server_ip) → 执行命令(ll, clear等)
+                </div>
+                虽然用户执行的是 <span class="highlight">ll</span>、<span class="highlight">clear</span> 等普通命令，<br>
+                但这些命令是在<strong>通过SSH连接到目标服务器后</strong>执行的。<br><br>
+                <strong>核查的本质：</strong>验证用户是否有权限从client_ip通过SSH连接到server_ip
+            </div>
+        </div>
+        
+        <!-- 实际示例 -->
+        <div class="example-box">
+            <div class="example-title">📋 实际示例</div>
+            
+            <div class="example-item">
+                <strong>输入数据：</strong><br>
+                sub_acct_name: webapp<br>
+                client_ip: 10.250.104.83<br>
+                server_ip: 10.102.44.103<br>
+                op_fort_content: ll
+            </div>
+            
+            <div class="example-item">
+                <strong>处理过程：</strong><br>
+                1. 检测到 "ll" 不是SSH命令<br>
+                2. 构造SSH命令: <span class="highlight">ssh webapp@10.102.44.103</span><br>
+                3. 提取三元组: (webapp, 10.250.104.83, 10.102.44.103)<br>
+                4. 在报备表中查找匹配记录
+            </div>
+            
+            <div class="example-item">
+                <strong>核查结果：</strong><br>
+                未报备<br>
+                详细说明：未报备，访问账号webapp已命中，源端IP10.250.104.83未命中，对端IP10.102.44.103未命中
+            </div>
+        </div>
+        
+        <!-- 三种模板对比 -->
+        <h2 style="color: #2c3e50; margin: 40px 0 20px 0; text-align: center;">📊 三种模板对比</h2>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>特性</th>
+                    <th>普通模板</th>
+                    <th>4A模板</th>
+                    <th>违规使用模板</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>运行脚本</strong></td>
+                    <td>run_audit.py</td>
+                    <td>run_audit_4a.py</td>
+                    <td>run_audit_violation.py</td>
+                </tr>
+                <tr>
+                    <td><strong>列名语言</strong></td>
+                    <td>中文</td>
+                    <td>中文</td>
+                    <td>英文</td>
+                </tr>
+                <tr>
+                    <td><strong>操作内容</strong></td>
+                    <td>ssh cmhop@IP<br>(标准SSH命令)</td>
+                    <td>ssh cmhop@IP<br>(标准SSH命令)</td>
+                    <td>ll, clear等<br>(普通命令)</td>
+                </tr>
+                <tr>
+                    <td><strong>账号来源</strong></td>
+                    <td>从SSH命令提取<br>或使用从账号</td>
+                    <td>从SSH命令提取<br>或使用从账号</td>
+                    <td>sub_acct_name<br>(CSV字段)</td>
+                </tr>
+                <tr>
+                    <td><strong>源IP来源</strong></td>
+                    <td>资源IP字段<br>或资源名称提取</td>
+                    <td>client_ip字段</td>
+                    <td>client_ip字段</td>
+                </tr>
+                <tr>
+                    <td><strong>目标IP来源</strong></td>
+                    <td>从SSH命令提取</td>
+                    <td>server_ip字段<br>或SSH命令提取</td>
+                    <td>server_ip字段</td>
+                </tr>
+                <tr>
+                    <td><strong>命令构造</strong></td>
+                    <td>❌ 不需要</td>
+                    <td>❌ 不需要</td>
+                    <td>✅ 需要构造<br>ssh acc@server</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- 关键代码 -->
+        <div class="example-box" style="background: #263238; color: #aed581; border-left-color: #4caf50;">
+            <div class="example-title" style="color: #4caf50;">💻 关键代码片段</div>
+            <pre style="margin: 0; line-height: 1.6; font-family: 'Consolas', monospace;">
+<span style="color: #80cbc4;"># 1. 提取字段</span>
+operation_content = row.get('op_fort_content')
+client_ip = row.get('client_ip')
+server_ip = row.get('server_ip')
+account = row.get('sub_acct_name')
+
+<span style="color: #80cbc4;"># 2. 构造SSH命令</span>
+<span style="color: #c792ea;">if not</span> operation_content.strip().startswith(<span style="color: #c3e88d;">'ssh'</span>):
+    <span style="color: #80cbc4;"># 不是SSH命令，构造SSH命令格式</span>
+    constructed_cmd = <span style="color: #c3e88d;">f"ssh {account}@{server_ip}"</span>
+<span style="color: #c792ea;">else</span>:
+    <span style="color: #80cbc4;"># 已经是SSH命令，直接使用</span>
+    constructed_cmd = operation_content
+
+<span style="color: #80cbc4;"># 3. 设置源IP</span>
+source_ip = client_ip
+
+<span style="color: #80cbc4;"># 4. 核查</span>
+result, matched_row, detail = auditor.audit_record(
+    constructed_cmd,  <span style="color: #80cbc4;"># 构造的SSH命令</span>
+    source_ip,        <span style="color: #80cbc4;"># 客户端IP作为源IP</span>
+    account           <span style="color: #80cbc4;"># 从账号名称</span>
+)
+            </pre>
+        </div>
+        
+        <!-- 总结 -->
+        <div class="key-point" style="background: #fff3e0; border-left-color: #ff9800;">
+            <div class="key-point-title" style="color: #f57c00;">🎯 核心要点总结</div>
+            <div style="color: #424242; line-height: 2;">
+                <strong>1. 为什么要构造SSH命令？</strong><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;因为核查的本质是验证SSH连接权限，而不是验证具体执行的命令。<br><br>
+                
+                <strong>2. 账号从哪里来？</strong><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;来自CSV的 <span class="highlight">sub_acct_name</span> 字段（从账号名称）。<br><br>
+                
+                <strong>3. 源IP和目标IP从哪里来？</strong><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;源IP：来自 <span class="highlight">client_ip</span> 字段（客户端地址）<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;目标IP：来自 <span class="highlight">server_ip</span> 字段（服务器地址）<br><br>
+                
+                <strong>4. 为什么大部分记录都是"未报备"？</strong><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;可能的原因：<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;• 这些操作确实没有报备<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;• 报备表中的IP范围不包含这些IP<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;• 报备已过期<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;• 账号名称不匹配
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; color: #7f8c8d; font-size: 14px;">
+            <p>SSH审计工具 - 违规使用模板核查逻辑可视化</p>
+            <p>© 2026 版本 v1.0</p>
+        </div>
+    </div>
+</body>
+</html>
