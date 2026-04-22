@@ -425,11 +425,13 @@ class FastAuditor:
                 return (RESULT_REPORTED, matched_serial, detail)
         else:
             # 构建未报备的详细说明
-            detail_parts = ["未报备"]
+            # 如果账号未命中，直接说明该账号不在报备表内，不再检查IP
             if not match_details['account_match']:
-                detail_parts.append(f"访问账号{account}未命中")
-            else:
-                detail_parts.append(f"访问账号{account}已命中")
+                detail = f"未报备，该访问账号{account}不在报备表内"
+                return (RESULT_NOT_REPORTED, '', detail)
+            
+            # 账号已命中，继续检查IP
+            detail_parts = ["未报备", f"访问账号{account}已命中"]
             
             if not match_details['source_ip_match']:
                 detail_parts.append(f"源端IP{source_ip}未命中")

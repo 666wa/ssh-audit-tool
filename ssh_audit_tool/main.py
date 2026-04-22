@@ -15,7 +15,6 @@ from ssh_audit_tool.config import (
     USE_FAST_AUDITOR
 )
 from ssh_audit_tool.file_handler import FileHandler
-from ssh_audit_tool.auditor import Auditor
 from ssh_audit_tool.fast_auditor import FastAuditor
 from ssh_audit_tool.date_extractor import DateExtractor
 from ssh_audit_tool.utils import get_output_path, print_statistics, get_source_ip
@@ -54,6 +53,11 @@ def parse_arguments():
     parser.add_argument(
         '--output',
         help='输出文件路径（可选，默认在操作命令表同目录生成）'
+    )
+    
+    parser.add_argument(
+        '--output-dir',
+        help='输出目录（可选，默认使用配置中的输出目录）'
     )
     
     parser.add_argument(
@@ -167,11 +171,12 @@ def main():
         if args.output:
             output_path = args.output
         else:
-            # 使用配置中的默认输出目录
+            # 优先使用命令行指定的输出目录，否则使用配置中的默认输出目录
+            output_dir = args.output_dir if args.output_dir else DEFAULT_OUTPUT_DIR
             output_path = get_output_path(
                 args.operation, 
                 add_timestamp=not args.no_timestamp,
-                output_dir=DEFAULT_OUTPUT_DIR
+                output_dir=output_dir
             )
         
         FileHandler.write_result(operation_df, output_path)

@@ -127,7 +127,7 @@ def print_statistics(results: Dict[str, int], total: int = None) -> None:
     logger.info(f"核查完成，共处理 {total} 条记录")
     
     # 按照固定顺序显示结果
-    result_order = ['已报备', '未报备', '异常：非有效ssh命令', '异常：无法获取有效本端IP']
+    result_order = ['已报备', '未报备', '不在核查范围内', '异常：非有效ssh命令', '异常：无法获取有效本端IP']
     
     for result_type in result_order:
         if result_type in results:

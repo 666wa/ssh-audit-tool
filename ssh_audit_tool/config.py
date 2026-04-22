@@ -23,9 +23,9 @@ from ssh_audit_tool.config_base import (
 
 
 # 默认文件路径配置
-DEFAULT_OPERATION_FILE = r"2026-02-25\月-使用ssh命令连接其它设备-SDC数据源(每日分析)_2026-02-24_17-04-12-054_774.csv"
-DEFAULT_REPORT_FILE = r"2026-02-25\主机互访报备-2026-02-25.csv"
-DEFAULT_OUTPUT_DIR = r"2026-02-25"
+DEFAULT_OPERATION_FILE = r"2026-03-19\月-使用ssh命令连接其它设备-SDC数据源(每日分析)_2026-03-19_15-03-58-572_167.csv"
+DEFAULT_REPORT_FILE = r"2026-03-19\主机互访报备-20260319.csv"
+DEFAULT_OUTPUT_DIR = r"2026-03-19"
 
 # 日志文件名（本模板专用）
 LOG_FILE = 'ssh_audit.log'

@@ -54,6 +54,11 @@ def parse_arguments():
     )
     
     parser.add_argument(
+        '--output-dir',
+        help='输出目录（可选，默认使用配置中的输出目录）'
+    )
+    
+    parser.add_argument(
         '--no-timestamp',
         action='store_true',
         help='输出文件名不添加时间戳'
@@ -169,11 +174,12 @@ def main():
         if args.output:
             output_path = args.output
         else:
-            # 使用配置中的默认输出目录
+            # 优先使用命令行指定的输出目录，否则使用配置中的默认输出目录
+            output_dir = args.output_dir if args.output_dir else DEFAULT_OUTPUT_DIR
             output_path = get_output_path(
                 args.operation, 
                 add_timestamp=not args.no_timestamp,
-                output_dir=DEFAULT_OUTPUT_DIR
+                output_dir=output_dir
             )
         
         FileHandler4A.write_result(operation_df, output_path)

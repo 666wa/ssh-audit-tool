@@ -26,13 +26,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # 交互式文件发现与选择
 # ============================================================
 
-def find_data_folders():
-    """扫描当前目录下的日期文件夹（格式：YYYY-MM-DD）"""
+def find_data_folders(base_dir='.'):
+    """扫描指定目录下的日期文件夹（格式：YYYY-MM-DD）"""
     import re
     folders = []
-    for name in sorted(os.listdir('.'), reverse=True):
-        if os.path.isdir(name) and re.match(r'^\d{4}-\d{2}-\d{2}$', name):
-            folders.append(name)
+    for name in sorted(os.listdir(base_dir), reverse=True):
+        path = os.path.join(base_dir, name)
+        if os.path.isdir(path) and re.match(r'^\d{4}-\d{2}-\d{2}$', name):
+            folders.append(path)
     return folders
 
 
@@ -103,8 +104,38 @@ def interactive_mode():
     ])
     mode = mode.split()[0]  # 提取模式名
 
-    # 2. 扫描数据文件夹
-    folders = find_data_folders()
+    # 2. 选择数据目录
+    print("\n请选择数据目录:")
+    print("  [1] 当前目录")
+    print("  [2] 上级目录")
+    print("  [3] 自定义目录")
+    while True:
+        try:
+            choice = input("\n请选择 (1-3) [默认: 1]: ").strip()
+            if not choice or choice == '1':
+                data_dir = '.'
+            elif choice == '2':
+                data_dir = '..'
+            elif choice == '3':
+                custom_dir = input("请输入自定义数据目录路径: ").strip()
+                if os.path.isdir(custom_dir):
+                    data_dir = custom_dir
+                    break
+                else:
+                    print("目录不存在，请重新选择")
+                    continue
+            else:
+                print("无效选择，请重新输入")
+                continue
+            break
+        except (ValueError, EOFError):
+            data_dir = '.'
+            break
+
+    print(f"数据目录: {data_dir}")
+
+    # 3. 扫描数据文件夹
+    folders = find_data_folders(data_dir)
     if not folders:
         print("\n未找到日期文件夹（格式：YYYY-MM-DD），请手动指定文件路径")
         return interactive_manual_input(mode)
@@ -151,7 +182,33 @@ def interactive_mode():
         if confirm == 'y':
             mode = detected
 
-    return mode, operation_file, report_file
+    # 5. 选择输出目录（可选）
+    while True:
+        print("\n请选择输出目录:")
+        print("  [1] 使用默认输出目录")
+        print("  [2] 当前目录")
+        if folders:
+            folder_names = [os.path.basename(f) for f in folders]
+            for i, name in enumerate(folder_names, 3):
+                print(f"  [{i}] {name}")
+        try:
+            choice = input(f"\n请选择 (1-{len(folders)+2}) [默认: 1]: ").strip()
+            if not choice or choice == '1':
+                output_dir = None
+                break
+            elif choice == '2':
+                output_dir = '.'
+                break
+            else:
+                idx = int(choice) - 3
+                if 0 <= idx < len(folders):
+                    output_dir = folders[idx]
+                    break
+                print("无效选择，请重新输入")
+        except (ValueError, EOFError):
+            break
+
+    return mode, operation_file, report_file, output_dir
 
 
 def interactive_manual_input(mode):
@@ -166,18 +223,46 @@ def interactive_manual_input(mode):
         print(f"错误: 文件不存在 - {report_file}")
         sys.exit(1)
 
-    return mode, operation_file, report_file
+    folders = find_data_folders('.')
+    while True:
+        print("\n请选择输出目录:")
+        print("  [1] 使用默认输出目录")
+        print("  [2] 当前目录")
+        if folders:
+            folder_names = [os.path.basename(f) for f in folders]
+            for i, name in enumerate(folder_names, 3):
+                print(f"  [{i}] {name}")
+        try:
+            choice = input(f"\n请选择 (1-{len(folders)+2}) [默认: 1]: ").strip()
+            if not choice or choice == '1':
+                output_dir = None
+                break
+            elif choice == '2':
+                output_dir = '.'
+                break
+            else:
+                idx = int(choice) - 3
+                if 0 <= idx < len(folders):
+                    output_dir = folders[idx]
+                    break
+                print("无效选择，请重新输入")
+        except (ValueError, EOFError):
+            break
+
+    return mode, operation_file, report_file, output_dir
 
 
 # ============================================================
 # 运行稽核
 # ============================================================
 
-def run_ssh_audit(operation_file, report_file, output=None, no_timestamp=False, log_level='INFO'):
+def run_ssh_audit(operation_file, report_file, output=None, output_dir=None, no_timestamp=False, log_level='INFO'):
     """运行标准SSH稽核"""
     sys.argv = ['audit.py', '-o', operation_file, '-r', report_file]
     if output:
         sys.argv.extend(['--output', output])
+    if output_dir:
+        sys.argv.extend(['--output-dir', output_dir])
     if no_timestamp:
         sys.argv.append('--no-timestamp')
     sys.argv.extend(['--log-level', log_level])
@@ -186,11 +271,13 @@ def run_ssh_audit(operation_file, report_file, output=None, no_timestamp=False, 
     return main()
 
 
-def run_4a_audit(operation_file, report_file, output=None, no_timestamp=False, log_level='INFO'):
+def run_4a_audit(operation_file, report_file, output=None, output_dir=None, no_timestamp=False, log_level='INFO'):
     """运行4A绕行核实"""
     sys.argv = ['audit.py', '-o', operation_file, '-r', report_file]
     if output:
         sys.argv.extend(['--output', output])
+    if output_dir:
+        sys.argv.extend(['--output-dir', output_dir])
     if no_timestamp:
         sys.argv.append('--no-timestamp')
     sys.argv.extend(['--log-level', log_level])
@@ -199,11 +286,13 @@ def run_4a_audit(operation_file, report_file, output=None, no_timestamp=False, l
     return main()
 
 
-def run_violation_audit(operation_file, report_file, output=None, no_timestamp=False, log_level='INFO'):
+def run_violation_audit(operation_file, report_file, output=None, output_dir=None, no_timestamp=False, log_level='INFO'):
     """运行账号违规使用稽核"""
     sys.argv = ['run_audit_violation.py', '-o', operation_file, '-r', report_file]
     if output:
         sys.argv.extend(['--output', output])
+    if output_dir:
+        sys.argv.extend(['--output-dir', output_dir])
     if no_timestamp:
         sys.argv.append('--no-timestamp')
     sys.argv.extend(['--log-level', log_level])
@@ -253,6 +342,7 @@ def parse_args():
     parser.add_argument('-o', '--operation', help='操作表文件路径')
     parser.add_argument('-r', '--report', help='报备表文件路径')
     parser.add_argument('--output', help='输出文件路径（可选）')
+    parser.add_argument('--output-dir', help='输出目录（可选）')
     parser.add_argument('--no-timestamp', action='store_true',
                         help='输出文件名不添加时间戳')
     parser.add_argument('--log-level', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'],
@@ -270,11 +360,12 @@ def main():
             print("错误: 指定了 --mode 但缺少 -o 或 -r 参数")
             sys.exit(1)
         # 交互式模式
-        mode, operation_file, report_file = interactive_mode()
+        mode, operation_file, report_file, output_dir = interactive_mode()
     else:
         mode = args.mode
         operation_file = args.operation
         report_file = args.report
+        output_dir = args.output_dir
 
     # 验证文件存在
     if not os.path.exists(operation_file):
@@ -288,6 +379,8 @@ def main():
     print(f"\n模式: {MODE_NAMES.get(mode, mode)}")
     print(f"操作表: {operation_file}")
     print(f"报备表: {report_file}")
+    if output_dir:
+        print(f"输出目录: {output_dir}")
     print()
 
     runner = MODE_RUNNERS.get(mode)
@@ -298,6 +391,7 @@ def main():
     return runner(
         operation_file, report_file,
         output=args.output,
+        output_dir=output_dir,
         no_timestamp=args.no_timestamp,
         log_level=args.log_level
     )
